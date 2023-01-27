@@ -8,7 +8,8 @@ const moment = require('moment');
 ////////////////// Create Appoinment ////////////////
 
 router.post('/createappt', async (req,res) => {
-    const user_id=req.body.user_id;   
+    const user_id=req.body.user_id;
+    const staff_id=req.body.staff_id;   
     const { products,date,time} = req.body;
  
     try {
@@ -16,7 +17,7 @@ router.post('/createappt', async (req,res) => {
         
         if (CheckAppointment) { return res.status(200).json({ status: false,message: 'Appointment Already Exists' }) }
         apptdata= new Appointment({
-            user_id,
+            user_id,staff_id,
             products,date,time
         })      
         await apptdata.save()
@@ -31,22 +32,36 @@ router.post('/createappt', async (req,res) => {
 
 ////////////////// GET APPOINTMENT DATA /////////////////////
 router.get("/getappt",async (req, res) => {
-     const user_id = req.body.user_id;
-        try {
-            // execute query with page and limit values
-            const results = await Appointment.find({});
-            // get total documents in the Posts collection 
-            const count = await Appointment.countDocuments();
-            const datalist = {
-                totalHits: count,
-                results
-           }
-            res.status(200).send({ status: "true",message: 'Schedule List Loading Success', data:results})
-        } catch (err) {
-            res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
-        }
-});
+    try {
+      
+        const results = await Appointment.find({}).populate(['user_id', 'staff_id']);
 
+        // return res.send(results)
+        let Resultarray = [];
+        
+        for(let i = 0; i < results.length; i++){
+            Resultarray.push({
+                "user_id": results[i].id,
+                "user_name": results[i].user_id.name,
+                "user_Phone":results[i].user_id.phone,
+                "user_email":results[i].user_id.email,
+                "user_products": results[i].products,
+                "user_date": results[i].date,
+                "user_Time": results[i].time,
+                // "user_staff_name":results[i].scheme_id.staff_name,
+                
+                // "user_scheme_duration":results[i].scheme_id.duration,
+                // "user_scheme_installment":results[i].scheme_id.installment,
+                // "user_scheme_amount":results[i].scheme_id.amount,
+            })
+        }
+
+       res.status(200).send({ status: "true",message: 'Appointment List Loading Success', data:Resultarray})
+    } catch (err) {
+        res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+    }
+})
+     
 
 //////////////////////////// GET APPOINTMENT BY ID /////////////
 router.get("/appt/:id",async (req, res) => {

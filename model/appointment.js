@@ -1,6 +1,7 @@
 const mongoose  = require('mongoose')
 const AppointmentSchema  = new mongoose.Schema({
     user_id:{ type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_users' },
+    staff_id:{ type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_staffs' },
     products:{ type: String,required: true,default:"" },
     date:{type: String,required: true,trim: true},
     time:{type: String,required: true,trim: true},

@@ -1,23 +1,22 @@
 const express     = require('express');
+const Transaction = require('../model/transaction');
 const router      =  new express.Router();
-const Payment        = require('../model/payments')
-const authenticate = require('../middleware/auth')
 const ObjectId = require('mongodb').ObjectID;
 
-router.post('/createpayment',async (req,res) => {
-    const user_id = req.body.user_id
-    const { delivery_details,payment_details,product_details,total_amount,delivery_fee,final_amount,transaction_id } = req.body
+router.post('/createtransaction',async (req,res) => {
+    const user_id = req.body.user_id;
+    const transaction_id=req.body.transaction_id;
+    const {  scheme,amount,grams,date_on,status } = req.body
    try {
-        const Checkuser = await Payment.findOne({user_id,transaction_id});
-        if (Checkuser) { return res.status(200).json({ status: false,message: 'Payment Already Exists' }) }
-        CountDoc = await Payment.find({}).exec();
-     const  payment_id = CountDoc.length+1
-      const cards = new Payment({
-            payment_id,user_id,delivery_details,payment_details
-            ,product_details,total_amount,delivery_fee,final_amount,transaction_id
+        const Checktransaction= await Transaction.findOne({user_id,transaction_id,scheme});
+        if (Checktransaction) { return res.status(200).json({ status: false,message: 'Transaction Already Exists' }) }
+        CountDoc = await Transaction.find({})
+    //  const  transaction_id = CountDoc.length+1
+      const cards = new Transaction({
+           scheme,transaction_id,amount,grams,date_on,status
          })
         await cards.save()
-        res.status(200).send({ status: "true",message: 'Payment Saved',data:cards})
+        res.status(200).send({ status: "true",message: 'Transaction Saved',data:cards})
     } catch (err) {
         console.log(err.message)
         res.status(200).send({ status: "false",message: 'Error in Solving'})
@@ -26,21 +25,21 @@ router.post('/createpayment',async (req,res) => {
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
 router.put('/:id',async (req,res) => {
-    Payment.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
+    Transaction.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
-        res.status(200).send({ status: "true",message: 'Payment Updated Success',data:user})
+        res.status(200).send({ status: "true",message: 'Transaction Updated Success',data:user})
     });
 })
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
 router.delete('/:id', async (req, res) => {
-    Payment.findByIdAndRemove(req.params.id, req.body, (err, user) => {
+    Transaction.findByIdAndRemove(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
-        res.status(200).send({ status: "true",message: 'Payment Deleted Success',data:user})
+        res.status(200).send({ status: "true",message: 'Transaction Deleted Success',data:user})
     });
 })
 
@@ -49,14 +48,14 @@ router.get("/",async (req, res) => {
         user_id = req.user.id
         try {
             // execute query with page and limit values
-            const results = await Payment.find({"user_id":ObjectId(user_id)}).exec();
+            const results = await Transaction.find({"user_id":ObjectId(user_id)}).exec();
             // get total documents in the Posts collection 
-            const count = await Payment.countDocuments();
+            const count = await Transaction.countDocuments();
             const datalist = {
                 totalHits: results.length,
                 results
            }
-            res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:results})
+            res.status(200).send({ status: "true",message: 'Transaction List Loading Success', data:results})
         } catch (err) {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }
@@ -64,10 +63,10 @@ router.get("/",async (req, res) => {
 
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
 router.get("/:id",async (req, res) => {
-    Payment.find({"_id":ObjectId(req.params.id)}
+    Transaction.find({"_id":ObjectId(req.params.id)}
         ,(err, docs) => {
         if (!err) {
-            res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:docs})
+            res.status(200).send({ status: "true",message: 'Transaction List Loading Success', data:docs})
         } else {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }

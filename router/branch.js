@@ -1,20 +1,19 @@
 const express     = require('express');
 const router      =  new express.Router()
-const Category        = require('../model/category')
+const Category        = require('../model/branch')
 const authenticate = require('../middleware/auth')
 
-router.post('/',async (req,res) => {
+router.post('/',authenticate, async (req,res) => {
     
-    const { name } = req.body;
-   
+    const { name,location,remark,count } = req.body
     try {
         const Checkuser = await Category.findOne({name});
-        if (Checkuser) { return res.status(200).json({ status: false,message: 'Category Already Exists' }) }
-      const category = new Category({
-                name,
+        if (Checkuser) { return res.status(200).json({ status: false,message: 'Shop Already Exists' }) }
+        category = new Category({
+            name,location,remark,count
          })
         await category.save()
-        res.status(200).send({ status: "true",message: 'Category Saved',data:category})
+        res.status(200).send({ status: "true",message: 'Shop Saved',data:category})
     } catch (err) {
         console.log(err.message)
         res.status(200).send({ status: "false",message: 'Error in Solving'})
@@ -22,22 +21,22 @@ router.post('/',async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
-router.put('/:id',async (req,res) => {
+router.put('/:id',authenticate, async (req,res) => {
      Category.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
-        res.status(200).send({ status: "true",message: 'Category Updated Success',data:user})
+        res.status(200).send({ status: "true",message: 'Shop Updated Success',data:user})
     });
 })
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
-router.delete('/:id',async (req, res) => {
+router.delete('/:id',authenticate, async (req, res) => {
     Category.findByIdAndRemove(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
-        res.status(200).send({ status: "true",message: 'Category Deleted Success',data:user})
+        res.status(200).send({ status: "true",message: 'Shop Deleted Success',data:user})
     });
 })
 
@@ -52,18 +51,18 @@ router.get("/",async (req, res) => {
                 totalHits: count,
                 results
            }
-            res.status(200).send({ status: "true",message: 'Category List Loading Success', data:datalist})
+            res.status(200).send({ status: "true",message: 'Shop List Loading Success', data:datalist})
         } catch (err) {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }
 });
 
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
-router.get("/:id",async (req, res) => {
+router.get("/:id", authenticate,async (req, res) => {
     Category.find({_id:req.params.id}
         ,(err, docs) => {
         if (!err) {
-            res.status(200).send({ status: "true",message: 'Category List Loading Success', data:docs})
+            res.status(200).send({ status: "true",message: 'Shop List Loading Success', data:docs})
         } else {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }

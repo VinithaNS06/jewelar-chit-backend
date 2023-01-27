@@ -1,7 +1,8 @@
 const express     = require('express');
 const router      =  new express.Router()
 const Product        = require('../model/products')
-const authenticate = require('../middleware/auth')
+const authenticate = require('../middleware/auth');
+// const Category = require('../model/category');
 
 router.post('/',async (req,res) => {
     
@@ -21,7 +22,7 @@ router.post('/',async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
-router.put('/:id',authenticate, async (req,res) => {
+router.put('/:id',async (req,res) => {
      Product.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
@@ -31,7 +32,7 @@ router.put('/:id',authenticate, async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
-router.delete('/:id',authenticate, async (req, res) => {
+router.delete('/:id',async (req, res) => {
     Product.findByIdAndRemove(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })

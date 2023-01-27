@@ -1,14 +1,12 @@
-const mongoose  = require('mongoose')
+const mongoose  = require('mongoose');
+const moment = require('moment');
+let date_now = moment.utc().toDate();
+
+const Current_date  = moment().utc().format('YYYY-MM-DD hh:mm:ss');
 const orderSchema  = new mongoose.Schema({
     user_id:{ type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_users' },
     product_id:{type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_products'},
-    delivery_details:{type: String,required: true,trim: true,default:""},
-    payment_details:{type: String,required: true,trim: true,default:""},
-    product_details:{type: String,required: true,trim: true,default:""},
-    total_amount:{type: Number,required: true,trim: true,default:0},
-    delivery_fee:{type: Number,required: true,trim: true,default:0},
-    final_amount:{type: Number,required: true,trim: true,default:0},
-    transaction_id:{type: String,required: true,trim: true,default:"0"},
+    date_on:{ type: String, required: false ,default:Current_date },
     status:{type: String,default:0},
     createdAt:{type: Date,default: Date.now}
 });
