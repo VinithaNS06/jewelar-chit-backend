@@ -3,7 +3,7 @@ const StoreSchema  = new mongoose.Schema({
     user_id:{ type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_users' },
     product_id:{ type:mongoose.Schema.Types.ObjectId,required: true, ref:'m8it_products' },
     qty:{type: Number,required: true,trim: true},
-    status:{type: String,default:0},
+    status:{type: String,default:1},
     createdAt:{type: Date,default: Date.now},
 });
 

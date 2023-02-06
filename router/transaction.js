@@ -13,7 +13,7 @@ router.post('/createtransaction',async (req,res) => {
         CountDoc = await Transaction.find({})
     //  const  transaction_id = CountDoc.length+1
       const cards = new Transaction({
-           scheme,transaction_id,amount,grams,date_on,status
+          user_id, scheme,transaction_id,amount,grams,date_on,status
          })
         await cards.save()
         res.status(200).send({ status: "true",message: 'Transaction Saved',data:cards})
@@ -35,7 +35,7 @@ router.put('/:id',async (req,res) => {
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
 router.delete('/:id', async (req, res) => {
-    Transaction.findByIdAndRemove(req.params.id, req.body, (err, user) => {
+    Transaction.findByIdAndUpdate(req.params.id, {status:0}, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
@@ -48,7 +48,7 @@ router.get("/",async (req, res) => {
         user_id = req.user.id
         try {
             // execute query with page and limit values
-            const results = await Transaction.find({"user_id":ObjectId(user_id)}).exec();
+            const results = await Transaction.find({status:1}).exec();
             // get total documents in the Posts collection 
             const count = await Transaction.countDocuments();
             const datalist = {

@@ -14,6 +14,12 @@ const transactionRoutes=require("../router/transaction");
 const uploadController = require('../router/upload');
 const webreportController = require('../router/reportsweb');
 const branchRoutes = require('../router/branch');
+const storetryRoutes=require("../router/storetry");
+const orderRoutes=require("../router/order");
+const rateHistoryRoutes=require("../router/ratehistory");
+const customerRoutes=require("../router/customer");
+const schemeListRoutes=require("../router/schemelist");
+const transcactionsRoutes=require("../router/transactionss");
 const InitiateMongoServer = require('../db/mongoose');
 InitiateMongoServer()
 const app   = express();
@@ -37,7 +43,12 @@ app.use("/api/transaction",transactionRoutes);
 app.use('/api/upload',uploadController);
 app.use('/api/webreport',webreportController);
 app.use('/api/branch',branchRoutes);
-
+app.use('/api/storetry',storetryRoutes);
+app.use("/api/orders",orderRoutes);
+app.use("/api/ratehistory",rateHistoryRoutes);
+app.use("/api/customers",customerRoutes);
+app.use("/api/schemelist",schemeListRoutes);
+app.use("/api/transactions",transcactionsRoutes);
 app.get('/api',(req,res)=>{
     res.send("Welcome");
 })

@@ -2,7 +2,7 @@ const express     = require('express');
 const router      =  new express.Router();
 const Payment        = require('../model/payments')
 const authenticate = require('../middleware/auth')
-const ObjectId = require('mongodb').ObjectID;
+// const ObjectId = require('mongodb').ObjectID;
 
 router.post('/createpayment',async (req,res) => {
     const user_id = req.body.user_id
@@ -10,10 +10,10 @@ router.post('/createpayment',async (req,res) => {
    try {
         const Checkuser = await Payment.findOne({user_id,transaction_id});
         if (Checkuser) { return res.status(200).json({ status: false,message: 'Payment Already Exists' }) }
-        CountDoc = await Payment.find({}).exec();
-     const  payment_id = CountDoc.length+1
+        CountDoc = await Payment.find().exec();
+    //  const  payment_id = CountDoc.length+1
       const cards = new Payment({
-            payment_id,user_id,delivery_details,payment_details
+            user_id,delivery_details,payment_details
             ,product_details,total_amount,delivery_fee,final_amount,transaction_id
          })
         await cards.save()
@@ -46,10 +46,10 @@ router.delete('/:id', async (req, res) => {
 
 /* ////////////////////////////////////////  GET DATA  ////////////////////////////////// ///*/
 router.get("/",async (req, res) => {
-        user_id = req.user.id
+        user_id = req.body.user_id
         try {
             // execute query with page and limit values
-            const results = await Payment.find({"user_id":ObjectId(user_id)}).exec();
+            const results = await Payment.find();
             // get total documents in the Posts collection 
             const count = await Payment.countDocuments();
             const datalist = {

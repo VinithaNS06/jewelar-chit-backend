@@ -8,6 +8,7 @@ const router     =  new express.Router()
 router.post('/create', async (req,res) => {
     
     const { name,staffid,comments} = req.body;
+    
  
     try {
         const CheckStaffs = await Staff.findOne({name,comments});
@@ -44,7 +45,7 @@ router.put('/:id',async (req,res) => {
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
 router.delete('/:id' ,async (req, res) => {
-    Staff.findByIdAndRemove(req.params.id, req.body, (err, staff) => {
+    Staff.findByIdAndUpdate(req.params.id, {status:0}, (err, staff) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
@@ -57,7 +58,7 @@ router.delete('/:id' ,async (req, res) => {
 router.get("/getstaff",async (req, res) => {
     try {
       
-        const results = await Staff.find({}).exec();
+        const results = await Staff.find({status:1}).exec();
         const count = await Staff.countDocuments();
         const stafflist = {
             totalHits: count,

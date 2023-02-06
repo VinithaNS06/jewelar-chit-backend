@@ -3,6 +3,8 @@ const router      =  new express.Router()
 const Rate        = require('../model/rate')
 const authenticate = require('../middleware/auth')
 
+const RateHistory = require('../model/ratehistory');
+
 router.post('/', async (req,res) => {
     const { rate,type } = req.body;
    
@@ -27,7 +29,7 @@ router.put('/:id', async (req,res) => {
     Rate.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
-        };
+        }
         res.status(200).send({ status: "true",message: 'Rate Updated Success',data:user})
     });
 })
@@ -60,14 +62,37 @@ router.get("/getrate",async (req, res) => {
 
 /////////////////////// GET DATA BY ID ///////////////////////////////
 router.get("/:id",async (req, res) => {
-    Rate.find({_id:req.params.id}
-        ,(err, docs) => {
-        if (!err) {
-            res.status(200).send({ status: "true",message: 'Rate List Loading Success', data:docs})
-        } else {
-            res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
-        }
-    });
+
+    const results = await Rate.find({_id: req.params.id})
+
+            makeArr = []
+
+            for(let i = 0; i < results.length; i++) {
+                currentRateDetails = await currentRate.find({rate_id: results[i]._id})
+
+                if(currentRateDetails != "") {
+                    makeArr.push({
+                     rate_id: results[i]._id,   
+                    current_rate_id: currentRateDetails[i]._id,
+                    type: results[i].type,
+                    default_rate: results[i].rate,
+                    status: results[i].status,
+                    current_rate: currentRateDetails[0].rate
+                })
+                }else{
+                    makeArr.push({
+                    rate_id: results[i]._id,  
+                    type: results[i].type,
+                    default_rate: results[i].rate,
+                    status: results[i].status
+                })  
+                }
+
+            }
+
+            // return res.status(200).json({status: 'true', message: 'fetched suc', data: makeArr})
+
+            return res.send(makeArr[0])
 
 });
 

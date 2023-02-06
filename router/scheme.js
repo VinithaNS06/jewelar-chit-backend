@@ -1,6 +1,7 @@
 const express     = require('express');
 const Schemes = require('../model/scheme');
 
+
 const router      =  new express.Router();
 
 //////////////////////// CREATE SCHEME  ////////////////////
@@ -29,7 +30,7 @@ router.put('/:id',async (req,res) => {
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
 router.delete('/:id',async (req, res) => {
-    Schemes.findByIdAndRemove(req.params.id, req.body, (err, user) => {
+    Schemes.findByIdAndUpdate(req.params.id, {status:0}, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
@@ -42,7 +43,7 @@ router.delete('/:id',async (req, res) => {
 router.get("/getscheme",async (req, res) => {
     try {
       
-        const results = await Schemes.find({});
+        const results = await Schemes.find({status:1});
         res.status(200).send({ status: "true",message: 'UserScheme List Loading Success', data:results})
     } catch (err) {
         res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
@@ -55,14 +56,12 @@ router.get("/:id",async (req, res) => {
     Schemes.find({_id:req.params.id}
         ,(err, docs) => {
         if (!err) {
-            res.status(200).send({ status: "true",message: 'UserScheme List Loading Success', data:docs})
+            res.status(200).send({ status: "true",message: 'Scheme List Loading Success', data:docs})
         } else {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }
     });
 
 });
-
-
 
 module.exports = router

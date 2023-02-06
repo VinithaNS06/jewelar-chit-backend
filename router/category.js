@@ -33,7 +33,7 @@ router.put('/:id',async (req,res) => {
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
 router.delete('/:id',async (req, res) => {
-    Category.findByIdAndRemove(req.params.id, req.body, (err, user) => {
+    Category.findByIdAndUpdate(req.params.id, {status:0}, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
@@ -42,10 +42,11 @@ router.delete('/:id',async (req, res) => {
 })
 
 /* ////////////////////////////////////////  GET DATA  ////////////////////////////////// ///*/
-router.get("/",async (req, res) => {
+router.get("/getcategory",async (req, res) => {
         try {
             // execute query with page and limit values
-            const results = await Category.find({}).exec();
+            const results = await Category.find({status:1});
+            
             // get total documents in the Posts collection 
             const count = await Category.countDocuments();
             const datalist = {

@@ -10,7 +10,7 @@ router.post('/', (req, res, next) => {
     return res.render('index', { message: req.flash() });
 });
 
-router.post('/upload-single',   upload.single('file'), (req, res, next) => {
+router.post('/upload-single', upload.single('file'), (req, res, next) => {
 //exports.uploadSingle = (req, res) => {
     if (req.file) {
         //console.log(req.file)

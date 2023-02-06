@@ -15,7 +15,7 @@ const SchemeSchema  = new mongoose.Schema({
     grams:{type:String,required: true,default:""},
     amountstepup:{type:Number,required:true},
     product_status:{ type:String,required: false},
-    status:{type: String,default:""},
+    status:{type: String,default:1},
     createdAt:{type: Date,default: Date.now}
 });
 

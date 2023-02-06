@@ -3,7 +3,7 @@ const router      =  new express.Router()
 const Category        = require('../model/branch')
 const authenticate = require('../middleware/auth')
 
-router.post('/',authenticate, async (req,res) => {
+router.post('/create', async (req,res) => {
     
     const { name,location,remark,count } = req.body
     try {
@@ -21,7 +21,7 @@ router.post('/',authenticate, async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
-router.put('/:id',authenticate, async (req,res) => {
+router.put('/:id',async (req,res) => {
      Category.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
@@ -31,7 +31,7 @@ router.put('/:id',authenticate, async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  DELETE DATA  ////////////////////////////////////////*/
-router.delete('/:id',authenticate, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     Category.findByIdAndRemove(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
@@ -58,7 +58,7 @@ router.get("/",async (req, res) => {
 });
 
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
-router.get("/:id", authenticate,async (req, res) => {
+router.get("/:id",async (req, res) => {
     Category.find({_id:req.params.id}
         ,(err, docs) => {
         if (!err) {

@@ -12,7 +12,7 @@ const TransactionSchema  = new mongoose.Schema({
     amount:{type: Number,required: true,trim: true},
     grams:{type: Number,required: false,trim: true,default:0},
     date_on:{ type: String, required: false ,default:Current_date },
-    status:{type: String,default:0},
+    status:{type: String,default:1},
     createdAt:{type: Date,default: Date.now}
 });
 

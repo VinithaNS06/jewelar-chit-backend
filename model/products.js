@@ -11,7 +11,7 @@ const ProductSchema  = new mongoose.Schema({
     grams:{type: Number,required: true,trim: true,default:0},
 	price:{type: Number,required: true,trim: true,default:0},
     image:{type: String,required: true,trim: true},
-    status:{type: String,default:0},
+    status:{type: String,default:1},
     createdAt:{type: Date,default: Date.now}
 });
 
