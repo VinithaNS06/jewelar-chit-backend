@@ -50,7 +50,7 @@ router.get("/",async (req, res) => {
             // get total documents in the Posts collection 
         //    return res.send(results)
             let Resultarray = [];
-        
+      
         for(let i = 0; i < results.length; i++){
             Resultarray.push({
                 "_id" :  results[i]._id,
@@ -58,9 +58,9 @@ router.get("/",async (req, res) => {
                 "customer_transaction_id":results[i].transaction_id,
                 "customer_name": results[i].customer_id.name,
                 "customer_Phone":results[i].customer_id.phone,
-                 "customer_email":results[i].customer_id.email,
+                "customer_email":results[i].customer_id.email,
                 "customer_address":results[i].customer_id.address,
-                "customer_product_id": results[i].product_id._id,
+                "product_id": results[i].product_id.id,
                 "customer_product_product": results[i].product_id.product,
                 "customer_product_title":results[i].product_id.title,
                 "customer_product_price":results[i].product_id.price,
@@ -93,7 +93,8 @@ router.get("/:id",async (req, res) => {
 
 
 
-router.get("/customerorders/:customerid",async (req, res) => {
+router.get("/customerorders/:id",async (req, res) => {
+    // console.log(req.params.id)
     Order.find({customer_id:req.params.id}
         ,(err, docs) => {
         if (!err) {

@@ -19,12 +19,15 @@ const orderRoutes=require("../router/order");
 const rateHistoryRoutes=require("../router/ratehistory");
 const customerRoutes=require("../router/customer");
 const schemeListRoutes=require("../router/schemelist");
-const transcactionsRoutes=require("../router/transactionss");
+
 const InitiateMongoServer = require('../db/mongoose');
 InitiateMongoServer()
 const app   = express();
 const port  =  process.env.PORT || 3012
 app.use(cors())
+app.use(
+    express.urlencoded({ extended: true })
+);
 app.use(express.json())
 app.use(express.static('storage'));
 
@@ -48,7 +51,7 @@ app.use("/api/orders",orderRoutes);
 app.use("/api/ratehistory",rateHistoryRoutes);
 app.use("/api/customers",customerRoutes);
 app.use("/api/schemelist",schemeListRoutes);
-app.use("/api/transactions",transcactionsRoutes);
+
 app.get('/api',(req,res)=>{
     res.send("Welcome");
 })

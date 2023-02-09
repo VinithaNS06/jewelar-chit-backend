@@ -6,15 +6,15 @@ const authenticate = require('../middleware/auth')
 
 router.post('/createpayment',async (req,res) => {
     const user_id = req.body.user_id
-    const { delivery_details,payment_details,product_details,total_amount,delivery_fee,final_amount,transaction_id } = req.body
+    const { delivery_details,payment_details,product_details,total_amount,delivery_fee,final_amount,transaction_id ,payment_status} = req.body
    try {
-        const Checkuser = await Payment.findOne({user_id,transaction_id});
+        const Checkuser = await Payment.findOne({user_id,transaction_id,payment_status});
         if (Checkuser) { return res.status(200).json({ status: false,message: 'Payment Already Exists' }) }
         CountDoc = await Payment.find().exec();
     //  const  payment_id = CountDoc.length+1
       const cards = new Payment({
             user_id,delivery_details,payment_details
-            ,product_details,total_amount,delivery_fee,final_amount,transaction_id
+            ,product_details,total_amount,delivery_fee,final_amount,transaction_id,payment_status,
          })
         await cards.save()
         res.status(200).send({ status: "true",message: 'Payment Saved',data:cards})
@@ -64,7 +64,7 @@ router.get("/",async (req, res) => {
 
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
 router.get("/:id",async (req, res) => {
-    Payment.find({"_id":ObjectId(req.params.id)}
+    Payment.find({_id:req.params.id}
         ,(err, docs) => {
         if (!err) {
             res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:docs})
@@ -74,5 +74,15 @@ router.get("/:id",async (req, res) => {
     });
 
 });
+router.put('/userschemepay/:id',async (req,res) => {
+    
+    Payment.findByIdAndUpdate({_id:req.params.id}, req.body, (err, user) => {
+        if (err) {
+            return res.status(200).send({status: "false",message: "Error",errors: err  })
+        };
+        res.status(200).send({ status: "true",message: 'Payment Updated Success',data:user})
+    });
+})
+
 
 module.exports = router
