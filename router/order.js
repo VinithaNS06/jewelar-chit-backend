@@ -105,4 +105,22 @@ router.get("/customerorders/:id",async (req, res) => {
     }).populate('product_id');
 
 });
+
+
+router.get("/total-orders/:id",async (req, res) => {
+    
+    orderDetails = await Order.find({customer_id:req.params.id}).count()
+
+    let lengthOrderDetails = orderDetails.length
+    return res.json({data: lengthOrderDetails})
+
+});
+router.get("/orders-details/:id",async(req,res)=>{
+   try {
+     const results = await Order.find({customer_id:req.params.id}).count();
+    res.status(200).send({ status: "true",message: 'Order List Loading Success', data:results})
+   } catch (err) {
+     res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+   }
+})
 module.exports = router
