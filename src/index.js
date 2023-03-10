@@ -1,5 +1,6 @@
 const express     = require('express')
 const cors = require('cors')
+// const puppeteer = require('puppeteer'); 
 const userRoutes=require("../router/user");
 const appointmentRoutes=require("../router/appointment");
 const categoryRoutes=require("../router/category");
@@ -19,7 +20,12 @@ const orderRoutes=require("../router/order");
 const rateHistoryRoutes=require("../router/ratehistory");
 const customerRoutes=require("../router/customer");
 const schemeListRoutes=require("../router/schemelist");
-
+const settingRoutes=require("../router/setting");
+const notificationRoutes=require("../router/notification");
+const invoiceRoutes=require("../router/invoice");
+const sliderRouter=require("../router/sliderItem");
+const bannerRouter = require('../router/banner');
+const bannerfullwidthRouter=require("../router/bannerfullwidth");
 const InitiateMongoServer = require('../db/mongoose');
 InitiateMongoServer()
 const app   = express();
@@ -39,7 +45,7 @@ app.use("/api/schemes",schemeRoutes);
 app.use("/api/products",productRoutes);
 app.use("/api/payments",paymentRoutes);
 app.use("/api/rates",rateRoutes);
-app.use("/api/userscheme",userschemeRoutes);
+app.use("/api/userschemes",userschemeRoutes);
 app.use("/api/delivery",deliveryRoutes);
 app.use("/api/staff",staffRoutes);
 app.use("/api/transaction",transactionRoutes);
@@ -51,7 +57,12 @@ app.use("/api/orders",orderRoutes);
 app.use("/api/ratehistory",rateHistoryRoutes);
 app.use("/api/customers",customerRoutes);
 app.use("/api/schemelist",schemeListRoutes);
-
+app.use("/api/setting",settingRoutes),
+app.use("/api/notifications",notificationRoutes),
+app.use("/api/sliders",sliderRouter);
+app.use("/api/banners",bannerRouter);
+app.use("/api/bannerlist",bannerfullwidthRouter);
+app.use("/api/invoices",invoiceRoutes);
 app.get('/api',(req,res)=>{
     res.send("Welcome");
 })

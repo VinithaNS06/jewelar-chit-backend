@@ -2,23 +2,22 @@ const express     = require('express');
 const router      =  new express.Router()
 const Product        = require('../model/products')
 const authenticate = require('../middleware/auth');
+const { ObjectId}  = require('mongodb');
 // const Category = require('../model/category');
 
 router.post('/',async (req,res) => {
-    
-    const { skuid,category_id,title,product,remark,carrot,wastage,making,image,price } = req.body
+     const { skuid,category_id,title,product,remark,total_installment,carrot,wastage,making,image,secondaryimage,productType,price,secondaryprice } = req.body
     try {
-        const Checkproduct = await Product.findOne({skuid,category_id,title,product});
-        if (Checkproduct) { return res.status(200).json({ status: false,message: 'Product Already Exists' }) }
-       const category = new Product({
-            skuid,category_id,title,product,remark,carrot,wastage,making,image ,price
+       const productlist = new Product({
+           skuid,category_id,title,product,remark,total_installment,carrot,wastage,making,image,secondaryimage,productType,price,secondaryprice
          })
-        await category.save()
-        res.status(200).send({ status: "true",message: 'Product Saved',data:category})
+        await productlist.save()
+        res.status(200).send({ status: "true",message: 'Product Saved',data:productlist})
     } catch (err) {
         console.log(err.message)
         res.status(200).send({ status: "false",message: 'Error in Solving'})
-    }
+    } 
+   
 })
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
@@ -44,18 +43,12 @@ router.delete('/:id',async (req, res) => {
 /* ////////////////////////////////////////  GET DATA  ////////////////////////////////// ///*/
 router.get("/getproduct",async (req, res) => {
         try {
-            // execute query with page and limit values
-            const results = await Product.find({status:1}).populate('category_id');
-            // get total documents in the Posts collection 
-            const count = await Product.countDocuments();
-            const datalist = {
-                totalHits: count,
-                results
-           }
-            res.status(200).send({ status: "true",message: 'Product List Loading Success', data:datalist})
-        } catch (err) {
-            res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
-        }
+      
+        const results = await Product.find({status:1});
+        res.status(200).send({ status: "true",message: 'UserScheme List Loading Success', data:results})
+    } catch (err) {
+        res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+    }
 });
 
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
@@ -83,4 +76,32 @@ router.get("/byprduct/:id",async (req, res) => {
 
 });
 
+
+router.get("/get/productlist",async (req, res) => {
+      try {
+            // execute query with page and limit values
+             
+            const productdata = await Product.find({status:1}).populate('_id');
+          
+            // return res.send(productdata)
+            let makeArray=[];
+            for(let i = 0; i < productdata.length; i++){
+                makeArray.push({
+                    "productid":productdata[i]._id,
+                    "product_name":productdata[i].title,
+                    "product_title":productdata[i].product,
+                    "product_desc":productdata[i].remark,
+                    "product_price":productdata[i].price,
+                    "product_secondary_price":productdata[i].secondaryprice,
+                    "product_image":productdata[i].image,
+                    "product_secondary_image":productdata[i].secondaryimage,
+                    "product_type":productdata[i].productType,
+                });
+            }
+       
+            res.status(200).send({ status: "true",message: 'Product List Loading Success', data:makeArray})
+        } catch (err) {
+            res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+        }
+});
 module.exports = router

@@ -1,23 +1,33 @@
 const express     = require('express');
-const router      =  new express.Router();
-const Payment        = require('../model/payments')
-const authenticate = require('../middleware/auth')
-// const ObjectId = require('mongodb').ObjectID;
+const router      =  new express.Router()
+const Rate        = require('../model/rate')
+const authenticate = require('../middleware/auth');
+const Payment = require('../model/payments');
 
-router.post('/createpayment',async (req,res) => {
-    const user_id = req.body.user_id
-    const { delivery_details,payment_details,product_details,total_amount,delivery_fee,final_amount,transaction_id ,payment_status} = req.body
-   try {
-        const Checkuser = await Payment.findOne({user_id,transaction_id,payment_status});
-        if (Checkuser) { return res.status(200).json({ status: false,message: 'Payment Already Exists' }) }
-        CountDoc = await Payment.find().exec();
-    //  const  payment_id = CountDoc.length+1
-      const cards = new Payment({
-            user_id,delivery_details,payment_details
-            ,product_details,total_amount,delivery_fee,final_amount,transaction_id,payment_status,
+router.post('/createpayment', authenticate,async (req,res) => {
+       user_id = req.body.user_id;
+    //   console.log(user_id)
+    const { scheme,transation_id,duration,installment,amount,payment_status} = req.body
+    // console.log(req)
+    try {
+        pay = new Payment({
+            user_id,
+            scheme,amount,duration,installment,transation_id ,payment_status
          })
-        await cards.save()
-        res.status(200).send({ status: "true",message: 'Payment Saved',data:cards})
+        await pay.save()
+
+        /* ///////////////////////////// GRAM UPDATE //////////////////////////////  */ 
+        gramsvalue = await Rate.find({}).limit(1).sort({rowid: 'desc'}).populate({path:'transation_id,user_id',strictPopulate:false}).exec();
+        ggrams = amount/gramsvalue[0].rate;
+        Payment.findByIdAndUpdate(pay._id, {grams:ggrams}, (err, paydetails) => {
+            if (err) {
+                return res.status(200).send({status: "false",message: "Error",errors: err  })
+            };
+            res.status(200).send({ status: "true",message: 'Payment Saved',data:paydetails})
+        });
+        /* /////////////////////////////////////////////////////////////////////////  */ 
+
+        
     } catch (err) {
         console.log(err.message)
         res.status(200).send({ status: "false",message: 'Error in Solving'})
@@ -25,8 +35,8 @@ router.post('/createpayment',async (req,res) => {
 })
 
 /*///////////// /////////////////////////////  UPDATE DATA  ////////////////////////////////////////*/
-router.put('/:id',async (req,res) => {
-    Payment.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
+router.put('/:id', async (req,res) => {
+   Payment.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
         if (err) {
             return res.status(200).send({status: "false",message: "Error",errors: err  })
         };
@@ -45,35 +55,58 @@ router.delete('/:id', async (req, res) => {
 })
 
 /* ////////////////////////////////////////  GET DATA  ////////////////////////////////// ///*/
-router.get("/",async (req, res) => {
-        user_id = req.body.user_id
+router.get("/getpayment",async (req, res) => {
+        user_id = req.body.user_id;
+        
         try {
             // execute query with page and limit values
-            const results = await Payment.find();
-            // get total documents in the Posts collection 
-            const count = await Payment.countDocuments();
+            const results = await Payment.find({user_id}).exec();
+            
             const datalist = {
                 totalHits: results.length,
                 results
            }
+        //    console.log(datalist)
             res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:results})
         } catch (err) {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }
 });
 
-/* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
 router.get("/:id",async (req, res) => {
-    Payment.find({_id:req.params.id}
-        ,(err, docs) => {
-        if (!err) {
-            res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:docs})
-        } else {
-            res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
-        }
-    });
-
+    scheme = req.body.scheme;;
+    try {
+        // execute query with page and limit values
+        const results = await Payment.find({ _id: scheme}).exec();
+        const datalist = {
+            totalHits: results.length,
+            results
+       }
+        res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:results})
+    } catch (err) {
+        res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+    }
 });
+router.get("/scheme/:id",async (req, res) => {
+    scheme = req.params.product_id;
+    console.log(scheme)
+   console.log('asdgfS23RG')
+    try {
+         const results = await Payment.find({scheme: product_id,user_id:user_id}).exec();
+        // execute query with page and limit values
+        // const results = await Payment.findOne({}).exec();
+      
+        const datalist = {
+            totalHits: results.length,
+            results
+       }
+      console.log('adsqwxcdfcv')
+        res.status(200).send({ status: "true",message: 'Payment List Loading Success', data:results})
+    } catch (err) {
+        res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+    }
+});
+
 router.put('/userschemepay/:id',async (req,res) => {
     
     Payment.findByIdAndUpdate({_id:req.params.id}, req.body, (err, user) => {
@@ -83,6 +116,4 @@ router.put('/userschemepay/:id',async (req,res) => {
         res.status(200).send({ status: "true",message: 'Payment Updated Success',data:user})
     });
 })
-
-
 module.exports = router

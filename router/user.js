@@ -30,7 +30,7 @@ router.post('/weblogin', async (req, res) => {
 
 router.post('/register', async (req,res) => {
     // console.log(req.body);
-    const { name, phone,email, password } = req.body
+    const { name, phone,email, password ,profileimg,address } = req.body
     try {
         const Checkuser = await User.findOne({phone});
         const Checkuserr = await User.findOne({email});
@@ -41,14 +41,16 @@ router.post('/register', async (req,res) => {
                 name,
                 phone,
                 email,
-                password
+                password,
+                profileimg,
+                address
             })
             await user.save()
 
             const payload = { user: {  id: user.id } }
             jwt.sign(payload,'M8IT_SECRET_STRONG_PASS_FIND', {expiresIn: 10000}, (err, token) => {
                     if (err) throw err
-                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token}})
+                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token,"_id":user._id}})
                 }
             )
         });
@@ -72,7 +74,7 @@ router.post('/login', async (req, res) => {
                     if (err){
                         res.status(200).send({ status: "false",message: 'Error',data:err})
                     }
-                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token}})
+                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token,"_id":Checkuser._id}})
                 })
             }else{
                 res.status(200).send({ status: "false",message: 'Password Wrong'})
@@ -93,7 +95,7 @@ router.post('/phonelogin', async (req, res) => {
                     if (err){
                         res.status(200).send({ status: "false",message: 'Error',data:err})
                     }
-                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token}})
+                    res.status(200).send({ status: "true",message: 'Login Success',data:{"access_token": token,"_id":Checkuser._id}})
                 })
    
     } catch (error) {
@@ -298,7 +300,6 @@ router.get("/get-users",async (req, res) => {
             res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
         }
 });
-
 
 
 module.exports = router

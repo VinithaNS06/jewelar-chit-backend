@@ -37,7 +37,7 @@ router.get("/getappt",async (req, res) => {
       
         const results = await Appointment.find({}).populate(['user_id', 'staff_id','product_id']);
 
-        // return res.send(results)
+        return res.send(results)
         let Resultarray = [];
         
         for(let i = 0; i < results.length; i++){

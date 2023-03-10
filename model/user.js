@@ -53,7 +53,7 @@ const UserSchema  = new mongoose.Schema({
     streetname:{type: String,default:""},
     city:{type: String,default:""},
     pincode:{type: Number,default:0},
-    addresstype:{type: String,default:"Home"},
+    address:{type: String,default:""},
     profileimg:{type: String,default:""},
     
 

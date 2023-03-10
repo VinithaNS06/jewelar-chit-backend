@@ -54,7 +54,7 @@ router.get("/",async (req, res) => {
         for(let i = 0; i < results.length; i++){
             Resultarray.push({
                 "_id" :  results[i]._id,
-                "customer_id": results[i].customer_id.id,
+                "customer_id": results[i].customer_id._id,
                 "customer_transaction_id":results[i].transaction_id,
                 "customer_name": results[i].customer_id.name,
                 "customer_Phone":results[i].customer_id.phone,
@@ -65,10 +65,11 @@ router.get("/",async (req, res) => {
                 "customer_product_title":results[i].product_id.title,
                 "customer_product_price":results[i].product_id.price,
                  "customer_product_image":results[i].product_id.image,
-                // "customer_scheme_duration":results[i].scheme_id.duration,
-                // "customer_scheme_installment":results[i].scheme_id.installment,
-                // "customer_scheme_amount":results[i].scheme_id.amount,
+                  
             })
+        //    Resultarray({
+        //     "product_count": results[0].length
+        //    })
         }
 
         // res.status(200).send({ status: "true",message: 'Order List Loading Success', data:results})
@@ -107,20 +108,28 @@ router.get("/customerorders/:id",async (req, res) => {
 });
 
 
-router.get("/total-orders/:id",async (req, res) => {
-    
-    orderDetails = await Order.find({customer_id:req.params.id}).count()
 
-    let lengthOrderDetails = orderDetails.length
-    return res.json({data: lengthOrderDetails})
 
-});
-router.get("/orders-details/:id",async(req,res)=>{
-   try {
-     const results = await Order.find({customer_id:req.params.id}).count();
-    res.status(200).send({ status: "true",message: 'Order List Loading Success', data:results})
-   } catch (err) {
-     res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
-   }
+router.get("/orderlist/totalorder",async(req,res)=>{
+    //  try {
+            // execute query with page and limit values
+            const customersData = await Order.find({});
+            // return res.json({result});
+             let makearray = []; 
+
+            for(let i = 0; i < customersData.length; i++){
+                const customerOrders = await Order.find({customer_id: customersData[i].customer_id}).populate(['customer_id', 'product_id']);
+               makearray.push({
+                    "_id" :  customerOrders[0]._id,
+                    "customer_id": customerOrders[0].customer_id._id,
+                    "customer_name":customerOrders[0].customer_id.name,
+                    "product_count":customerOrders.length
+                    }) 
+            }
+           
+           res.status(200).send({ status: "true",message: 'Order List Loading Success', results:makearray})
+        // } catch (err) {
+        //     res.status(200).send({ status: "false",message: 'Error in Solving', data:err})
+        // }
 })
 module.exports = router

@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = function(req, res, next) {
+module.exports = function (req, res, next) {
   const token = req.header("Authorization");
-  const split_token =token.split(' ');
+  const split_token = token.split(" ");
   const bearer_token = split_token[1];
   if (!bearer_token) return res.status(401).json({ message: "Auth Error" });
 
@@ -12,6 +12,6 @@ module.exports = function(req, res, next) {
     next();
   } catch (e) {
     console.error(e);
-    res.status(500).send({ "status" : "false",message: "Invalid Token" });
+    res.status(500).send({ status: "false", message: "Invalid Token" });
   }
 };
