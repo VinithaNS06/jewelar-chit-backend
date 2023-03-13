@@ -5,6 +5,7 @@ const authenticate = require("../middleware/auth");
 const Payment = require("../model/payments");
 const { ObjectID, ObjectId } = require("mongodb");
 const moment = require("moment");
+const UserScheme = require("../model/userscheme");
 
 const router = new express.Router();
 
@@ -32,7 +33,9 @@ router.post("/createscheme", authenticate, async (req, res) => {
   } = req.body;
   try {
     let Scheme_count = await Schemes.countDocuments();
+
     scheme = Scheme_count + 1;
+    // console.log(scheme);
     const Checkuser = await Schemes.findOne({
       scheme_name,
       duration,
@@ -43,6 +46,7 @@ router.post("/createscheme", authenticate, async (req, res) => {
         .status(200)
         .json({ status: false, message: "Scheme Already Exists" });
     }
+    // console.log("uyybjvnmh");
     const schemelist = new Schemes({
       scheme_code,
       scheme_name,
@@ -62,7 +66,9 @@ router.post("/createscheme", authenticate, async (req, res) => {
       product_status,
       status,
     });
+    // console.log(schemelist);
     await schemelist.save();
+
     res
       .status(200)
       .send({ status: "true", message: "Scheme Saved", data: schemelist });
@@ -79,13 +85,11 @@ router.put("/:id", async (req, res) => {
         .status(200)
         .send({ status: "false", message: "Error", errors: err });
     }
-    res
-      .status(200)
-      .send({
-        status: "true",
-        message: "Category Updated Success",
-        data: user,
-      });
+    res.status(200).send({
+      status: "true",
+      message: "Category Updated Success",
+      data: user,
+    });
   });
 });
 
@@ -97,13 +101,11 @@ router.delete("/:id", async (req, res) => {
         .status(200)
         .send({ status: "false", message: "Error", errors: err });
     }
-    res
-      .status(200)
-      .send({
-        status: "true",
-        message: "Category Deleted Success",
-        data: user,
-      });
+    res.status(200).send({
+      status: "true",
+      message: "Category Deleted Success",
+      data: user,
+    });
   });
 });
 
@@ -117,13 +119,11 @@ router.get("/getscheme", authenticate, async (req, res) => {
       totalHits: results.length,
       results,
     };
-    res
-      .status(200)
-      .send({
-        status: "true",
-        message: "Scheme List Loading Success",
-        data: results,
-      });
+    res.status(200).send({
+      status: "true",
+      message: "Scheme List Loading Success",
+      data: results,
+    });
   } catch (err) {
     res
       .status(200)
@@ -134,7 +134,7 @@ router.get("/getscheme", authenticate, async (req, res) => {
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
 
 router.get("/:id", authenticate, async (req, res) => {
-  check = await SchemeList.find({
+  check = await UserScheme.find({
     user_id: ObjectId(req.user.id),
     scheme: ObjectId(req.params.id),
   });
@@ -144,16 +144,15 @@ router.get("/:id", authenticate, async (req, res) => {
       //   console.log(user_id)
       // check = await SchemeList.find({user_id:ObjectId(req.user.id),scheme:ObjectId(req.params.id)})
       // datas.push({'Schme':vall,Isexist:check.length})
-      // console.log(check.length)
+      // console.log(check);
+      // console.log(check[0].is_paid);
       // console.log('sdsfas')
-      res
-        .status(200)
-        .send({
-          status: "true",
-          message: "Scheme List Loading Success",
-          data: docs,
-          Isexist: check.length,
-        });
+      res.status(200).send({
+        status: "true",
+        message: "Scheme List Loading Success",
+        data: docs,
+        Ispay: check[0].is_paid,
+      });
     } else {
       res
         .status(200)
@@ -165,13 +164,11 @@ router.get("/:id", authenticate, async (req, res) => {
 router.get("/user/paymentdetails/:id", authenticate, async (req, res) => {
   Schemes.find({ _id: req.params.id }, (err, docs) => {
     if (!err) {
-      res
-        .status(200)
-        .send({
-          status: "true",
-          message: "Scheme List Loading Success",
-          data: docs,
-        });
+      res.status(200).send({
+        status: "true",
+        message: "Scheme List Loading Success",
+        data: docs,
+      });
     } else {
       res
         .status(200)
@@ -179,24 +176,5 @@ router.get("/user/paymentdetails/:id", authenticate, async (req, res) => {
     }
   });
 });
-
-// router.post('/',authenticate, async (req,res) => {
-//     const {scheme_code,scheme_name,scheme_desc,Benefits,duration,installment,min_amount,max_amount} = req.body
-//     try {
-//         let Scheme_count = await Schemes.countDocuments();
-//         scheme =  Scheme_count+1
-//         const Checkuser = await Schemes.findOne({scheme_name,duration,installment});
-//         if (Checkuser) { return res.status(200).json({ status: false,message: 'Scheme Already Exists' }) }
-//         wishlist = new Schemes({
-//            scheme,
-//             scheme_code,scheme_name,scheme_desc,Benefits,duration,installment,min_amount,max_amount,
-//          })
-//         await wishlist.save()
-//         res.status(200).send({ status: "true",message: 'Scheme Saved',data:wishlist})
-//     } catch (err) {
-//         console.log(err.message)
-//         res.status(200).send({ status: "false",message: 'Error in Solving'})
-//     }
-// })
 
 module.exports = router;

@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
     default: "Paid",
   },
   date_on: { type: String, required: false, default: Current_date },
-  is_paid: { type: String, required: false, default: "Un-Paid" },
+  is_paid: { type: String, required: false, default: 0 },
   status: { type: String, default: 0 },
   createdAt: { type: Date, default: Date.now },
 });

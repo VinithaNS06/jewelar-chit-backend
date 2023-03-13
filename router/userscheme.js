@@ -8,31 +8,21 @@ var ObjectId = require("mongodb").ObjectId;
 
 router.post("/", authenticate, async (req, res) => {
   // user_id = req.user.id;
-  const { user_id, scheme, transation_id, amount } = req.body;
+  const { user_id, scheme, transation_id, amount, payment_status } = req.body;
   try {
     pay = new UserScheme({
       user_id,
       scheme,
       transation_id,
       amount,
+      payment_status,
+      is_paid: 1,
     });
     await pay.save();
-
-    /* ///////////////////////////// GRAM UPDATE //////////////////////////////  */
-    // gramsvalue = await Rate.find({}).limit(1).sort({rowid: 'desc'}).exec();
-    // ggrams = amount/gramsvalue[0].rate;
-    // UserScheme.findByIdAndUpdate(pay._id, {grams:ggrams}, (err, paydetails) => {
-    //     if (err) {
-    //         return res.status(200).send({status: "false",message: "Error",errors: err  })
-    //     };
-    //     res.status(200).send({ status: "true",message: 'UserScheme Saved',data:paydetails})
-    // });
-    // // console.log(user_id,scheme);
-
     res.status(200).send({
       status: "true",
       message: "UserScheme Updated Success",
-      data: user,
+      data: pay,
     });
     // });
     /* /////////////////////////////////////////////////////////////////////////  */
