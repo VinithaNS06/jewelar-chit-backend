@@ -35,7 +35,7 @@ router.post("/createscheme", authenticate, async (req, res) => {
     let Scheme_count = await Schemes.countDocuments();
 
     scheme = Scheme_count + 1;
-    // console.log(scheme);
+
     const Checkuser = await Schemes.findOne({
       scheme_name,
       duration,
@@ -46,7 +46,7 @@ router.post("/createscheme", authenticate, async (req, res) => {
         .status(200)
         .json({ status: false, message: "Scheme Already Exists" });
     }
-    // console.log("uyybjvnmh");
+
     const schemelist = new Schemes({
       scheme_code,
       scheme_name,
