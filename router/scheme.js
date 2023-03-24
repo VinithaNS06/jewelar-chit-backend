@@ -134,7 +134,7 @@ router.get("/getscheme", authenticate, async (req, res) => {
 /* ////////////////////////////////////////  GET BY ID  ////////////////////////////////// ///*/
 
 router.get("/:id", authenticate, async (req, res) => {
-  check = await UserScheme.find({
+  check = await Payment.find({
     user_id: ObjectId(req.user.id),
     scheme: ObjectId(req.params.id),
   });
