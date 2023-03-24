@@ -55,7 +55,7 @@ router.get("/getappt", async (req, res) => {
       "product_id",
     ]);
 
-    return res.send(results);
+    // return res.send(results);
     let Resultarray = [];
 
     for (let i = 0; i < results.length; i++) {
@@ -148,7 +148,6 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.get("/apptdetails/:id", async (req, res) => {
-  // console.log(req.params.id)
   Appointment.find({ _id: req.params.id }, (err, docs) => {
     if (!err) {
       res.status(200).send({

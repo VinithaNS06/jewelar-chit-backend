@@ -63,7 +63,7 @@ const UserSchema = new mongoose.Schema({
   ],
   createdAt: {
     type: Date,
-    expires: 60 * 60 * 24 * 7,
+    expires: 60 * 60 * 24 * 365,
     default: Date.now,
   },
 });

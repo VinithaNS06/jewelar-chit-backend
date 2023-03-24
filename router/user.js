@@ -16,7 +16,7 @@ router.post("/weblogin", async (req, res) => {
       jwt.sign(
         payload,
         "M8IT_SECRET_STRONG_PASS_FIND",
-        { expiresIn: "365d" },
+        { expiresIn: "30d" },
         (err, token) => {
           if (err) {
             res
@@ -71,7 +71,7 @@ router.post("/register", async (req, res) => {
       jwt.sign(
         payload,
         "M8IT_SECRET_STRONG_PASS_FIND",
-        { expiresIn: "365d" },
+        { expiresIn: "30d" },
         (err, token) => {
           if (err) throw err;
           res.status(200).send({
@@ -105,7 +105,7 @@ router.post("/login", async (req, res) => {
         jwt.sign(
           payload,
           "M8IT_SECRET_STRONG_PASS_FIND",
-          { expiresIn: "365d" },
+          { expiresIn: "30d" },
           (err, token) => {
             if (err) {
               res
@@ -140,7 +140,7 @@ router.post("/phonelogin", async (req, res) => {
     jwt.sign(
       payload,
       "M8IT_SECRET_STRONG_PASS_FIND",
-      { expiresIn: "365d" },
+      { expiresIn: "30d" },
       (err, token) => {
         if (err) {
           res
@@ -171,7 +171,7 @@ router.post("/emaillogin", async (req, res) => {
     jwt.sign(
       payload,
       "M8IT_SECRET_STRONG_PASS_FIND",
-      { expiresIn: "365d" },
+      { expiresIn: "30d" },
       (err, token) => {
         if (err) {
           res

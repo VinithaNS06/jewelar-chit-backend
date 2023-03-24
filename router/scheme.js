@@ -151,7 +151,7 @@ router.get("/:id", authenticate, async (req, res) => {
         status: "true",
         message: "Scheme List Loading Success",
         data: docs,
-        Ispay: check[0].is_paid,
+        Ispay: check.length,
       });
     } else {
       res
