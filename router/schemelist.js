@@ -182,9 +182,9 @@ router.get("/user/paymentdetails", authenticate, async (req, res) => {
         scheme_code: val.scheme.scheme_code,
         scheme_min_amount: val.scheme.min_amount,
         scheme_max_amount: val.scheme.max_amount,
-        // // "total_installment":val.scheme.installment,
-        // "paid_installment":val.scheme.paidinstallment,
-        // "pending_installment":val.scheme.pendinginstallment,
+        // "total_installment":val.scheme.installment,
+        paid_installment: val.scheme.paidinstallment,
+        pending_installment: val.scheme.pendinginstallment,
         grams: val.scheme.grams,
         rate: val.scheme.rate,
         Status: val.scheme.status,
@@ -208,5 +208,38 @@ router.get("/user/paymentdetails", authenticate, async (req, res) => {
       .send({ status: "false", message: "Error in Solving", data: err });
   }
 });
+router.get("/getscheme_byuser/:id", authenticate, async (req, res) => {
+  // console.log(req.params.id);
+  try {
+    const results = await UserScheme.find({ scheme: req.params.id }).populate([
+      "user_id",
+    ]);
 
+    // console.log(results);
+    // return res.send(results);
+    let Resultarray = [];
+    // console.log(Resultarray);
+
+    for (let i = 0; i < results.length; i++) {
+      Resultarray.push({
+        _id: results[i]._id,
+        user_id: results[i]._id,
+        user_name: results[i].user_id.name,
+        user_Phone: results[i].user_id.phone,
+        user_address: results[i].user_id.address,
+        amount: results[i].amount,
+      });
+    }
+
+    res.status(200).send({
+      status: "true",
+      message: "UserScheme List Loading Success",
+      data: Resultarray,
+    });
+  } catch (err) {
+    res
+      .status(200)
+      .send({ status: "false", message: "Error in Solving", data: err });
+  }
+});
 module.exports = router;

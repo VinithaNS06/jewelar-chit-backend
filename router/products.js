@@ -18,7 +18,8 @@ router.post("/", async (req, res) => {
     image,
     productType,
     price,
-    secondaryprice,
+    occasion,
+    gender,
   } = req.body;
   try {
     const CheckProdcuts = await Product.findOne({
@@ -32,8 +33,9 @@ router.post("/", async (req, res) => {
       making,
       image,
       productType,
+      occasion,
+      gender,
       price,
-      secondaryprice,
     });
     if (CheckProdcuts) {
       return res
@@ -51,9 +53,9 @@ router.post("/", async (req, res) => {
       making,
       image,
       productType,
-
+      occasion,
+      gender,
       price,
-      secondaryprice,
     });
     await productlist.save();
     res

@@ -162,4 +162,5 @@ router.get("/apptdetails/:id", async (req, res) => {
     }
   }).populate("product_id");
 });
+
 module.exports = router;

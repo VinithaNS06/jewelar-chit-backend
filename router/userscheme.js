@@ -2,33 +2,42 @@ const express = require("express");
 const UserScheme = require("../model/userscheme");
 const router = new express.Router();
 const authenticate = require("../middleware/auth");
-const Scheme = require("../model/scheme");
-const Customer = require("../model/cutomer");
-const Transaction = require("../model/transaction");
 const Rate = require("../model/rate");
 // const SchemeList = require('../model/schemeslist');
 var ObjectId = require("mongodb").ObjectId;
-
 router.post("/", authenticate, async (req, res) => {
-  // user_id = req.user.id;
   const { user_id, scheme, transation_id, amount, payment_status } = req.body;
   try {
-    pay = new UserScheme({
+    const pay = new UserScheme({
       user_id,
       scheme,
       transation_id,
       amount,
       payment_status,
-      is_paid: 1,
     });
     await pay.save();
 
+    /* ///////////////////////////// GRAM UPDATE //////////////////////////////  */
+    const gramsvalue = await Rate.find({})
+      .limit(1)
+      .sort({ rowid: "desc" })
+      .exec();
+    const ggrams = amount / gramsvalue[0].rate;
+    const paydetails = await UserScheme.findByIdAndUpdate(
+      pay._id,
+      { grams: ggrams },
+      { new: true }
+    );
+    if (!paydetails) {
+      return res
+        .status(404)
+        .send({ status: "false", message: "UserScheme not found" });
+    }
     res.status(200).send({
       status: "true",
-      message: "UserScheme Updated Success",
-      data: pay,
+      message: "UserScheme Saved",
+      data: paydetails,
     });
-    // });
     /* /////////////////////////////////////////////////////////////////////////  */
   } catch (err) {
     console.log(err.message);
@@ -72,9 +81,10 @@ router.delete("/:id", authenticate, async (req, res) => {
 router.get("/getuserscheme", authenticate, async (req, res) => {
   try {
     const results = await UserScheme.find({}).populate(["user_id", "scheme"]);
-
+    // console.log(results);
     // return res.send(results);
     let Resultarray = [];
+    // console.log(Resultarray);
 
     for (let i = 0; i < results.length; i++) {
       Resultarray.push({
@@ -105,58 +115,25 @@ router.get("/getuserscheme", authenticate, async (req, res) => {
   }
 });
 
-// router.get("/:id", authenticate, async (req, res) => {
-//   scheme = req.params.id;
-//   try {
-//     // execute query with page and limit values
-//     const results = await UserScheme.find({ _id: scheme }).exec();
-//     const datalist = {
-//       totalHits: results.length,
-//       results,
-//     };
-//     res.status(200).send({
-//       status: "true",
-//       message: "UserScheme List Loading Success",
-//       data: datalist,
-//     });
-//   } catch (err) {
-//     res
-//       .status(200)
-//       .send({ status: "false", message: "Error in Solving", data: err });
-//   }
-// });
-
 router.get("/:id", authenticate, async (req, res) => {
-  const schemeId = req.params.id;
   try {
-    const scheme = await Scheme.findById(schemeId);
-
-    const transactions = await Transaction.find({ schemeId: schemeId });
-
-    const customers = [];
-    for (const transaction of transactions) {
-      const customerId = transaction.customerId;
-      const customer = await Customer.findById(customerId);
-      customers.push(customer);
-    }
-
-    const data = {
-      scheme: scheme,
-      transactions: transactions,
-      customers: customers,
+    // execute query with page and limit values
+    const results = await UserScheme.find({ _id: req.params.id })
+      .populate("scheme")
+      .populate("user_id");
+    const datalist = {
+      totalHits: results.length,
+      results,
     };
     res.status(200).send({
       status: "true",
-      message:
-        "Scheme, transaction, and customer information retrieved successfully",
-      data: data,
+      message: "UserScheme List Loading Success",
+      data: results,
     });
   } catch (err) {
-    res.status(500).send({
-      status: "false",
-      message: "Error retrieving scheme, transaction, and customer information",
-      data: err,
-    });
+    res
+      .status(200)
+      .send({ status: "false", message: "Error in Solving", data: err });
   }
 });
 
@@ -183,4 +160,28 @@ router.get("/scheme/:id", authenticate, async (req, res) => {
       .send({ status: "false", message: "Error in Solving", data: err });
   }
 });
+router.get(
+  "/getschemebyuser/:userid/:schemeid",
+  authenticate,
+  async (req, res) => {
+    // schemeid = req.body.schemeid;
+    try {
+      const results = await UserScheme.find({
+        user_id: req.params.userid,
+        scheme: req.params.schemeid,
+      });
+
+      res.status(200).send({
+        status: "true",
+        message: "UserScheme List Loading Success",
+        data: results,
+      });
+    } catch (err) {
+      res
+        .status(200)
+        .send({ status: "false", message: "Error in Solving", data: err });
+    }
+  }
+);
+
 module.exports = router;
